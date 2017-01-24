@@ -1,3 +1,7 @@
+print(package.path)
+package.path = package.path..';'..(debug.getinfo(1).source:match("@?(.*/)")).."?.lua"
+print(package.path)
+
 local rs232 = require("luars232")
 local socket = require("socket")
 local bindechex = require("bindechex")
@@ -164,7 +168,7 @@ DATA_TYPE_COMMAND              =     "05"
 DATA_TYPE_STATUS               =     "06"
 
 
-local version = "0.22" 
+local ver = version.git
 local uart_version = UART_PROTOCOL_VERSION_V1
 local pid_file = "/tmp/run/unwired_router.pid"
 local port_name = "/dev/ttyATH0"
@@ -417,7 +421,7 @@ else
 	f:close()
 end
 
-print("RPL-router version "..version..", uart protocol version: "..uart_version.."\n")
+print("RPL-router version "..ver..", uart protocol version: "..uart_version.."\n")
 
 e, p = rs232.open(port_name)
 if e ~= rs232.RS232_ERR_NOERROR then
@@ -461,7 +465,6 @@ while true do
 	end
 end
  
-
 
 
 
