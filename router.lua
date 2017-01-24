@@ -1,7 +1,4 @@
-print(package.path)
 package.path = package.path..';'..(debug.getinfo(1).source:match("@?(.*/)")).."?.lua"
-print(package.path)
-
 local rs232 = require("luars232")
 local socket = require("socket")
 local bindechex = require("bindechex")
