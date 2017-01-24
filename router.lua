@@ -2,7 +2,7 @@ local rs232 = require("luars232")
 local socket = require("socket")
 local bindechex = require("bindechex")
 local posix = require("posix")
-local version = require("version")
+local version = require("version") --
 
 
 device_group = {}
