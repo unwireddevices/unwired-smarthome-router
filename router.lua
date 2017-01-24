@@ -163,7 +163,7 @@ DATA_TYPE_COMMAND              =     "05"
 DATA_TYPE_STATUS               =     "06"
 
 
-local version = "0.22" --test
+local version = "0.22" 
 local uart_version = UART_PROTOCOL_VERSION_V1
 local pid_file = "/tmp/run/unwired_router.pid"
 local port_name = "/dev/ttyATH0"
