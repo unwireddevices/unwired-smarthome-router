@@ -277,9 +277,16 @@ function sensor_data_processing(ipv6_adress, data)
 		print(" BDPM: Button name: "..button_name)
 		print(" BDPM: Button event: "..device_button_events[sensor_event])
 
-
-		ipv6_adress = "fe80:0000:0000:0000:0212:4b00:0c47:4a85"
-		send_relay_command(ipv6_adress, 1, "toggle")
+		if (button_name == "A") then
+			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:3e00"
+			send_relay_command(ipv6_adress, 1, "toggle")
+		elseif (button_name == "B") then
+			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a85"
+			send_relay_command(ipv6_adress, 1, "toggle")
+		elseif (button_name == "C") then
+			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a02"
+			send_relay_command(ipv6_adress, 1, "toggle")
+		end
 	end
 end
 
