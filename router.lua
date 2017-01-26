@@ -150,8 +150,6 @@ PROTOCOL_VERSION_V1            =     "01"
 DEVICE_VERSION_V1              =     "01"
 UART_PROTOCOL_VERSION_V1       =     "01"
 
-
-
 UART_PV1_START_MQ = "011616161610"
 UART_PV1_STOP_MQ = "031616161704"
 UART_NONE_DATA = "FFFFFFFFFFFFFFFFFFFF"
@@ -290,6 +288,15 @@ function sensor_data_processing(ipv6_adress, data)
 			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a85"
 			send_relay_command(ipv6_adress, 1, "toggle")
 		elseif (button_name == "C") then
+			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a02"
+			send_relay_command(ipv6_adress, 1, "toggle")
+		elseif (button_name == "D") then
+			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a85"
+			send_relay_command(ipv6_adress, 1, "toggle")
+			socket.sleep(0.1)
+			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:3e00"
+			send_relay_command(ipv6_adress, 1, "toggle")
+			socket.sleep(0.1)
 			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a02"
 			send_relay_command(ipv6_adress, 1, "toggle")
 		end
