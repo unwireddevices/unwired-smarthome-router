@@ -83,7 +83,9 @@ device_ability[DEVICE_ABILITY_GAS_SENSOR] = "GAS sensor"
 DEVICE_ABILITY_POWER_METER     =     "0C"
 device_ability[DEVICE_ABILITY_POWER_METER] = "Power/voltage meter"
 
-DEVICE_ABILITY_RESERVED2       =     "0D"
+DEVICE_ABILITY_RADIATION_METER       =     "0D"
+device_ability[DEVICE_ABILITY_RADIATION_METER] = "Radiation meter"
+
 DEVICE_ABILITY_RESERVED3       =     "0E"
 DEVICE_ABILITY_RESERVED4       =     "0F"
 DEVICE_ABILITY_RESERVED5       =     "10"
@@ -163,6 +165,8 @@ DATA_TYPE_CONFIRM              =     "03"
 DATA_TYPE_PING                 =     "04"
 DATA_TYPE_COMMAND              =     "05"
 DATA_TYPE_STATUS               =     "06"
+DATA_TYPE_WARNING              =     "07"
+
 
 
 local ver = version.git
