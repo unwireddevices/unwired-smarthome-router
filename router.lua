@@ -233,6 +233,8 @@ function send_command_to_ability(ipv6_adress, ability_target, ability_number, ab
 
 	
 	print("Processing time "..(math.ceil(socket.gettime()*1000 - start_time)).." ms")
+	start_time = socket.gettime()*1000
+	socket.sleep(0.08)
 	--print(raw_data:tohex())
 end
 
@@ -274,31 +276,27 @@ function sensor_data_processing(ipv6_adress, data)
 
 	local sensor_name = device_ability[number_ability] or "Not found ability description: "..number_ability
 
-	print("SDPM: Adress: "..ipv6_adress)
-	print("SDPM: Sensor type: "..sensor_name)
+	print("SDPM: Adress: "..ipv6_adress..", sensor type: "..sensor_name)
 	if (number_ability == DEVICE_ABILITY_BUTTON) then
 		button_name = string.upper(tostring(sensor_number):fromhex())
-		print(" BDPM: Button name: "..button_name)
-		print(" BDPM: Button event: "..device_button_events[sensor_event])
+		print(" BDPM: Button: "..button_name..", event: "..device_button_events[sensor_event])
 
 		if (button_name == "A") then
-			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:3e00"
-			send_relay_command(ipv6_adress, 1, "toggle")
+			send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3e00", 1, "toggle")
 		elseif (button_name == "B") then
-			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a85"
-			send_relay_command(ipv6_adress, 1, "toggle")
+			send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a85", 1, "toggle")
 		elseif (button_name == "C") then
-			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a02"
-			send_relay_command(ipv6_adress, 1, "toggle")
+			send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a02", 1, "toggle")
 		elseif (button_name == "D") then
-			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a85"
-			send_relay_command(ipv6_adress, 1, "toggle")
-			socket.sleep(0.1)
-			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:3e00"
-			send_relay_command(ipv6_adress, 1, "toggle")
-			socket.sleep(0.1)
-			ipv6_adress = "fd00:0000:0000:0000:0212:4b00:0c47:4a02"
-			send_relay_command(ipv6_adress, 1, "toggle")
+			if (device_button_events[sensor_event] == "longclick") then
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a85", 1, "off")
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3e00", 1, "off")
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a02", 1, "off")
+			else
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a85", 1, "on")
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3e00", 1, "on")
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a02", 1, "on")
+			end
 		end
 	end
 end
@@ -461,7 +459,7 @@ while true do
 				if (data_read ~= nil) then
 					led("on")
 					console_print("\n/------------------------------------------------------/\n")
-					console_print("DAGROOTRAW1"..data_read.."\n")
+					--console_print("DAGROOTRAW1"..data_read.."\n")
 					packet_parse("DAGROOTRAW1"..data_read)
 					led("off")
 				end
