@@ -132,7 +132,7 @@ device_relay_commands[DEVICE_ABILITY_RELAY_COMMAND_ON] = "on"
 DEVICE_ABILITY_RELAY_COMMAND_OFF   =   "00"
 device_relay_commands[DEVICE_ABILITY_RELAY_COMMAND_OFF] = "off"
 
-DEVICE_ABILITY_RELAY_COMMAND_TOGGLE   =   "02"
+DEVICE_ABILITY_RELAY_COMMAND_TOGGLE   =   "80"
 device_relay_commands[DEVICE_ABILITY_RELAY_COMMAND_TOGGLE] = "toggle"
 -----------------------------------------------------------------------------------
 
