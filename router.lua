@@ -1,4 +1,5 @@
-package.path = package.path..';'..(debug.getinfo(1).source:match("@?(.*/)")).."?.lua"
+local script_dir = (debug.getinfo(1).source:match("@?(.*/)"))
+package.path = package.path..';'..script_dir.."?.lua"
 local rs232 = require("luars232")
 local socket = require("socket")
 local bindechex = require("bindechex")
@@ -171,6 +172,7 @@ local ver = version.git
 local uart_version = UART_PROTOCOL_VERSION_V1
 local pid_file = "/tmp/run/unwired_router.pid"
 local port_name = "/dev/ttyATH0"
+local log_file = script_dir.."devices_status.log"
 local pid = posix.getpid()
 local start_time = 0
 
@@ -187,6 +189,18 @@ function string.tohex(str)
         return string.format('%02X ', string.byte(c))
     end))
 end
+
+function write_lo_log(str)
+    local f,err = io.open(log_file,"a")
+    local log_time = os.time()
+	if not f then
+		print(err, f)
+	else
+		f:write(log_time..","..str.."\n")
+		f:close()
+	end
+end
+
 
 function led(state)
 	if (state == "on") then
@@ -341,6 +355,8 @@ function status_data_processing(ipv6_adress, data)
 	print(" Parent RSSI: "..parent_rssi.."dbm")
 	print(" Temp: "..temp.."C")
 	print(" Voltage: "..voltage.." v")
+	local log_data = ipv6_adress..","..ipv6_adress_parent_short..","..uptime..","..parent_rssi..","..temp..","..voltage
+	write_lo_log(log_data)
 end
 
 
