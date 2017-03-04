@@ -175,6 +175,9 @@ local port_name = "/dev/ttyATH0"
 local log_file = script_dir.."devices_status.log"
 local pid = posix.getpid()
 local start_time = 0
+local map = {}
+map.nodes = {}
+map.links = {}
 
 
 function string.fromhex(str)
@@ -201,6 +204,41 @@ function write_lo_log(str)
 	end
 end
 
+function wget_data_send(api_key, value_type, value)
+	if (value_type == "voltage") then
+		local field = "field2"
+		local command = 'wget --no-check-certificate -qO- "https://api.thingspeak.com/update?api_key='..api_key..'&'..field..'='..value..'" &'
+		os.execute(command)
+	elseif (value_type == "uptime") then
+		local field = "field1"
+		local command = '( sleep 15; wget --no-check-certificate -qO- "https://api.thingspeak.com/update?api_key='..api_key..'&'..field..'='..value..'" ) &'
+		os.execute(command)
+	end
+
+end
+
+function update_ts_channel(address, value_type, value)
+	if (address == "fd00:0000:0000:0000:0212:4b00:0c47:3a00") then
+		wget_data_send("6P06S2I81X412JIR", value_type, value)
+	elseif (address == "fd00:0000:0000:0000:0212:4b00:0c47:4b05") then
+		wget_data_send("GHZLBBRFOFFYSUP3", value_type, value)
+	elseif (address == "fd00:0000:0000:0000:0212:4b00:0c47:4a85") then
+		wget_data_send("RB2SEV381GNAI14R", value_type, value)
+	elseif (address == "fd00:0000:0000:0000:0212:4b00:0c47:4a02") then
+		wget_data_send("6AZZVI8SFXQBFDHW", value_type, value)
+	elseif (address == "fd00:0000:0000:0000:0212:4b00:0c47:4880") then
+		wget_data_send("LSGSFREU9GHK30YR", value_type, value)
+	elseif (address == "fd00:0000:0000:0000:0212:4b00:0c47:3e00") then
+		wget_data_send("99DOTCKKCPGHYB3U", value_type, value)
+	elseif (address == "fd00:0000:0000:0000:0212:4b00:0c47:4b82") then
+		wget_data_send("9U3175EF4NWFLCHU", value_type, value)
+	elseif (address == "fd00:0000:0000:0000:0212:4b00:0c47:3b85") then
+		wget_data_send("PCHJXTUODC0LS2PW", value_type, value)
+	elseif (address == "fd00:0000:0000:0000:0212:4b00:0c47:3b04") then
+		wget_data_send("F80QAU2U0RM47IFG", value_type, value)
+	end
+end
+
 
 function led(state)
 	if (state == "on") then
@@ -208,6 +246,32 @@ function led(state)
 	elseif (state == "off") then
 		os.execute("echo 0 > /sys/devices/platform/leds-gpio/leds/unwone\:green\:eth1_rxtx/brightness")
 	end
+end
+
+
+function generate_map(ipv6_adress, ipv6_adress_parent_short)
+	local adress_capturing = "%w%w%w%w:%w%w%w%w:%w%w%w%w:%w%w%w%w:%w%w%w%w:%w%w%w%w:(%w%w%w%w:%w%w%w%w)"
+	local adress_short_capturing = "%w%w%w%w:%w%w%w%w:(%w%w%w%w:%w%w%w%w)"
+
+	local _, node_adress, parent_address
+	local a = {}
+	_, _, node_adress = string.find(ipv6_adress, adress_capturing)
+	_, _, parent_address = string.find(ipv6_adress_parent_short, adress_short_capturing)
+
+	local new_node = true
+	local i = 0
+	local i_node = 0
+	for key, val in pairs(map.nodes) do
+   		if (val == node_adress) then
+   			new_node = false
+   			i_node = i
+   		end
+   		i = i + 1
+	end
+	if (new_node == true) then
+		map.nodes[i+1] = ipv6_adress
+	end
+
 end
 
 function ipv6_adress_parse(ipv6_adress)
@@ -296,20 +360,27 @@ function sensor_data_processing(ipv6_adress, data)
 		print(" BDPM: Button: "..button_name..", event: "..device_button_events[sensor_event])
 
 		if (button_name == "A") then
-			send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3e00", 1, "toggle")
+			send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3c84", 1, "toggle")
 		elseif (button_name == "B") then
-			send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a85", 1, "toggle")
+			if (ipv6_adress == "fd00:0000:0000:0000:0212:4b00:0c47:4b82") then
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3c84", 1, "toggle")
+			else
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3e00", 1, "toggle")
+			end
 		elseif (button_name == "C") then
+			send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a85", 1, "toggle")
 			send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a02", 1, "toggle")
 		elseif (button_name == "D") then
 			if (device_button_events[sensor_event] == "longclick") then
 				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a85", 1, "off")
 				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3e00", 1, "off")
 				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a02", 1, "off")
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3c84", 1, "off")
 			else
 				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a85", 1, "on")
 				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3e00", 1, "on")
 				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:4a02", 1, "on")
+				send_relay_command("fd00:0000:0000:0000:0212:4b00:0c47:3c84", 1, "on")
 			end
 		end
 	end
@@ -357,6 +428,9 @@ function status_data_processing(ipv6_adress, data)
 	print(" Voltage: "..voltage.." v")
 	local log_data = ipv6_adress..","..ipv6_adress_parent_short..","..uptime..","..parent_rssi..","..temp..","..voltage
 	write_lo_log(log_data)
+	update_ts_channel(ipv6_adress, "voltage", voltage)
+	update_ts_channel(ipv6_adress, "uptime", uptime/60/60/24)
+	--generate_map(ipv6_adress, ipv6_adress_parent_short)
 end
 
 
